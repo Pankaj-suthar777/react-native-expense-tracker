@@ -1,8 +1,7 @@
 import React from 'react';
-import {Text, View} from 'react-native';
 import ExpensesOutput from '../components/ExpenceOutput/ExpensesOutput';
 
-const AllExpense = () => {
+const AllExpense = ({navigation}) => {
   return <ExpensesOutput expensesPeriod="Total" />;
 };
 
