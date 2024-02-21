@@ -1,13 +1,19 @@
-import React, {useLayoutEffect} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React, {useLayoutEffect, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
 import IconButton from '../components/ui/IconButton';
 import {GlobalStyles} from '../constants/styles';
-import Button from '../components/ui/Button';
 import {useDispatch, useSelector} from 'react-redux';
 import {addExpense, deleteExpense, updateExpense} from '../redux/expenseSlice';
 import ExpenseForm from '../components/ManageExpense/ExpenseForm';
+import {
+  deleteExpenseAxios,
+  storeExpense,
+  updateExpenseAxios,
+} from '../utils/http';
+import Loading from '../components/ui/Loading';
 
 const ManageExpense = ({route, navigation}) => {
+  const [isSubmiting, setIsSubmiting] = useState(false);
   const dispatch = useDispatch();
   const {expenses} = useSelector(state => state.expenses);
   const editedExpenseId = route.params?.expenseId;
@@ -24,16 +30,19 @@ const ManageExpense = ({route, navigation}) => {
     });
   }, [navigation, isEditing]);
 
-  function deleteExpenseHandler() {
-    navigation.goBack();
+  async function deleteExpenseHandler() {
     dispatch(deleteExpense(editedExpenseId));
+    setIsSubmiting(true);
+    await deleteExpenseAxios(editedExpenseId);
+    navigation.goBack();
   }
 
   function cancelHandler() {
     navigation.goBack();
   }
 
-  function confirmHandler(expenseData) {
+  async function confirmHandler(expenseData) {
+    setIsSubmiting(true);
     if (isEditing) {
       dispatch(
         updateExpense({
@@ -41,12 +50,17 @@ const ManageExpense = ({route, navigation}) => {
           data: expenseData,
         }),
       );
+      await updateExpenseAxios(editedExpenseId, expenseData);
     } else {
-      dispatch(addExpense(expenseData));
+      const id = await storeExpense(expenseData);
+      dispatch(addExpense({...id, expenseData}));
     }
     navigation.goBack();
   }
 
+  if (isSubmiting) {
+    return <Loading />;
+  }
   return (
     <View style={styles.container}>
       <ExpenseForm

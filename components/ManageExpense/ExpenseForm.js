@@ -7,11 +7,11 @@ import {GlobalStyles} from '../../constants/styles';
 const ExpenseForm = ({onCancel, isEditing, onSubmit, defaultValue}) => {
   const [inputValues, setInputValues] = useState({
     amount: {
-      value: defaultValue ? defaultValue.amount.toString() : '',
+      value: defaultValue ? defaultValue.amount?.toString() : '',
       isValid: true,
     },
     date: {
-      value: defaultValue ? defaultValue.date.toISOString().slice(0, 10) : '',
+      value: defaultValue ? defaultValue.date?.toISOString().slice(0, 10) : '',
       isValid: true,
     },
     description: {
