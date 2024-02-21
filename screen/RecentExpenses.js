@@ -5,9 +5,11 @@ import {getDateminusDays} from '../utils/data';
 import {fetchExpenses} from '../utils/http';
 import {setExpense} from '../redux/expenseSlice';
 import Loading from '../components/ui/Loading';
+import ErrorOverlay from '../components/ui/ErrorOverlay';
 
 const RecentExpenses = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState();
   const dispatch = useDispatch();
   const {expenses} = useSelector(state => state.expenses);
 
@@ -20,12 +22,20 @@ const RecentExpenses = () => {
   useEffect(() => {
     async function getExpenses() {
       setIsLoading(true);
-      const FetchedExpenses = await fetchExpenses();
+      try {
+        const FetchedExpenses = await fetchExpenses();
+        dispatch(setExpense(FetchedExpenses));
+      } catch (err) {
+        setError('Could not fetch expenses!');
+      }
       setIsLoading(false);
-      dispatch(setExpense(FetchedExpenses));
     }
     getExpenses();
   }, []);
+
+  if (error) {
+    return <ErrorOverlay message={error} />;
+  }
 
   if (isLoading) {
     return <Loading />;
