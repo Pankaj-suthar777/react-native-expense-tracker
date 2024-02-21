@@ -62,7 +62,8 @@ const ManageExpense = ({route, navigation}) => {
         navigation.goBack();
       } else {
         const id = await storeExpense(expenseData);
-        dispatch(addExpense({...id, expenseData}));
+        dispatch(addExpense({id, ...expenseData}));
+        navigation.goBack();
       }
     } catch (err) {
       setError('Could not save data - please try again later!');
