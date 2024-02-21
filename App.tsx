@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AllExpense from './screen/AllExpense';
 import {NavigationContainer} from '@react-navigation/native';
@@ -9,6 +9,8 @@ import RecentExpenses from './screen/RecentExpenses';
 import {GlobalStyles} from './constants/styles';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IconButton from './components/ui/IconButton';
+import {store} from './redux/store';
+import {Provider} from 'react-redux';
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -65,18 +67,30 @@ function ExpensesOverview() {
 
 function App(): React.JSX.Element {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="ExpensesOverview"
-          component={ExpensesOverview}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen name="ManageExpense" component={ManageExpense} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerStyle: {backgroundColor: GlobalStyles.colors.primary500},
+            headerTintColor: 'white',
+          }}>
+          <Stack.Screen
+            name="ExpensesOverview"
+            component={ExpensesOverview}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="ManageExpense"
+            component={ManageExpense}
+            options={{
+              presentation: 'card',
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 
